@@ -223,4 +223,12 @@ class markov():
         #   De cette faÃ§on, les mots d'un court poÃ¨me auraient une importance beaucoup plus grande que
         #   les mots d'une trÃ¨s longue oeuvre du mÃªme auteur. Ce n'est PAS ce qui vous est demandÃ© ici.
 
+        for currentAutor in self.auteurs:
+            for currentFile in self.get_aut_files(currentAutor):
+                print("auteur: " + currentAutor + " / current file: " + currentFile)
+
+        #with self.get_aut_files(currentAutor) as currentFile:
+
+
+
         return
