@@ -42,7 +42,8 @@ class markov():
 
     # Le code qui suit est fourni pour vous faciliter la vie.  Il n'a pas Ã  Ãªtre modifiÃ©
     # Signes de ponctuation Ã  retirer (complÃ©ter la liste qui ne comprend que "!" et "," au dÃ©part)
-    PONC = ["!",","]
+    PONC = ["!","?",",",".","--",";",":","_","...","«","»","(",")","[","]"] # char that should be removed
+    PONC_toSpace = ["'","\n\n","\n"," ","    ","   ","  "] # char that should be changed to a space
 
     def set_ponc(self, value):
         """DÃ©termine si les signes de ponctuation sont conservÃ©s (True) ou Ã©liminÃ©s (False)
@@ -223,11 +224,28 @@ class markov():
         #   De cette faÃ§on, les mots d'un court poÃ¨me auraient une importance beaucoup plus grande que
         #   les mots d'une trÃ¨s longue oeuvre du mÃªme auteur. Ce n'est PAS ce qui vous est demandÃ© ici.
 
-        for currentAutor in self.auteurs:
-            for currentFile in self.get_aut_files(currentAutor):
-                print("auteur: " + currentAutor + " / current file: " + currentFile)
+        splitedTexts = [] # list of all wordlist
+        for currentAutor in self.auteurs: # for a single autor
+            splitedTexts.append([])
+            for currentFilePath in self.get_aut_files(currentAutor): # for a text of that autor
+                print("auteur: " + currentAutor + " / current file: " + currentFilePath)
+                with open(currentFilePath, 'r', encoding='UTF-8') as currentFile: # open the file
+                    currentText = currentFile.read() # file to string
 
-        #with self.get_aut_files(currentAutor) as currentFile:
+                    for p in self.PONC: # remove ponctuation
+                        currentText = currentText.replace(p, "")
+                    for p_space in self.PONC_toSpace: # change some ponctuation to a [space]
+                        currentText = currentText.replace(p_space, " ")
+
+                    # add current text to the word list of the corresponding autor
+                    splitedTexts[self.auteurs.index(currentAutor)].extend(currentText.split(" "))
+                    print(len(splitedTexts[self.auteurs.index(currentAutor)]))
+        print(len(splitedTexts))
+
+        for wordList in splitedTexts:
+            # do something with the word list of the current autor
+            # example: split into [Bigramme], [Trigramme], [n-gramme]
+            print(" ")
 
 
 
