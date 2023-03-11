@@ -228,7 +228,7 @@ class markov():
         for currentAutor in self.auteurs: # for a single autor
             splitedTexts.append([])
             for currentFilePath in self.get_aut_files(currentAutor): # for a text of that autor
-                print("auteur: " + currentAutor + " / current file: " + currentFilePath)
+                #print("auteur: " + currentAutor + " / current file: " + currentFilePath)
                 with open(currentFilePath, 'r', encoding='UTF-8') as currentFile: # open the file
                     currentText = currentFile.read() # file to string
 
@@ -239,14 +239,21 @@ class markov():
 
                     # add current text to the word list of the corresponding autor
                     splitedTexts[self.auteurs.index(currentAutor)].extend(currentText.split(" "))
-                    print(len(splitedTexts[self.auteurs.index(currentAutor)]))
-        print(len(splitedTexts))
+                    #print(len(splitedTexts[self.auteurs.index(currentAutor)]))
+        #print(len(splitedTexts))
 
         for wordList in splitedTexts:
             # do something with the word list of the current autor
             # example: split into [Bigramme], [Trigramme], [n-gramme]
-            print(" ")
+            
+            for word in wordList:
 
+                if word in ngram_dict:
+                    ngram_dict[word]+=1
+
+
+                else :
+                    ngram_dict[word] =1
 
 
         return
