@@ -25,7 +25,28 @@
 import os
 import glob
 import ntpath
+class ngram():
+    def __init__(self):
+        self.gram = []
 
+    def append(self, word):
+        self.gram.append(word)
+
+    def __hash__(self):
+        str = ""
+        for word in self.gram :
+            str+=word
+
+        return hash(str)
+    def __eq__(self, other):
+        if len(self.gram) != len(other.gram):
+            return  False
+        for i in range(len(self.gram)):
+            if self.gram[i] !=  other.gram[i] :
+                return False
+        return True
+    def __ne__(self, other):
+        return not self.__eq__(other)
 class markov():
     """Classe Ã  utiliser pour coder la solution Ã  la problÃ©matique:
 
@@ -241,19 +262,24 @@ class markov():
                     splitedTexts[self.auteurs.index(currentAutor)].extend(currentText.split(" "))
                     #print(len(splitedTexts[self.auteurs.index(currentAutor)]))
         #print(len(splitedTexts))
-
+        ngram_dict :dict ={}
+        ng = ngram()
         for wordList in splitedTexts:
             # do something with the word list of the current autor
             # example: split into [Bigramme], [Trigramme], [n-gramme]
-            
-            for word in wordList:
 
-                if word in ngram_dict:
-                    ngram_dict[word]+=1
+            for word in wordList:
+                ng.append(word)
+
+                for i in range(wordList.index(word)+1, wordList.index(word)+self.ngram):
+                    ng.append(wordList[i])
+
+                if ng in ngram_dict:
+                    ngram_dict[ng]+=1
 
 
                 else :
-                    ngram_dict[word] =1
+                    ngram_dict[ng] =1
 
 
         return
