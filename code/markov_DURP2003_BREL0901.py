@@ -284,9 +284,23 @@ class markov():
         """
         # -a pour choisir l'auteur
         # -F pour setter le n-gramme
+
         sortedNgram = sorted(self.dicts[auteur].items(), key=lambda item: item[1], reverse=True)
+        if n > len(sortedNgram):
+            return [[]]
         returnList = []
         returnList.append(sortedNgram[n][0].gram)
+
+        frequency = sortedNgram[n][1]
+        offset = 1
+        while sortedNgram[n-offset][1] == frequency:
+            returnList.append(sortedNgram[n-offset][0].gram)
+            offset += 1
+        offset = 1
+        while sortedNgram[n+offset][1] == frequency:
+            returnList.append(sortedNgram[n+offset][0].gram)
+            offset += 1
+
         return returnList
 
 
