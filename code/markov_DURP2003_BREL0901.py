@@ -29,17 +29,18 @@ class ngram():
     def __init__(self):
         self.gram = []
 
-    def append(self, word:str):
+    def append(self, word):
         self.gram.append(word)
 
     def string(self):
-        #str = ""
-        #for word in self.gram:
-            #str = str + word + " "
-        newString = ' '.join(self.gram)
-        return  newString
+        str = ""
+       # print(self.gram)
+        for word in self.gram:
+
+            str += word + " "
+        return  str
     def __hash__(self):
-        #print(self.gram)
+
         return hash(self.string())
     def __eq__(self, other):
         if len(self.gram) != len(other.gram):
@@ -65,8 +66,8 @@ class markov():
 
     # Le code qui suit est fourni pour vous faciliter la vie.  Il n'a pas Ã  Ãªtre modifiÃ©
     # Signes de ponctuation Ã  retirer (complÃ©ter la liste qui ne comprend que "!" et "," au dÃ©part)
-    PONC = ["!","?",",",".","--",";",":","_","...","«","»","(",")","[","]","—"] # char that should be removed
-    PONC_toSpace = ["'","\n"," "] # char that should be changed to a space
+    PONC = ["!","?",",",".","--",";",":","_","...","«","»","(",")","[","]"] # char that should be removed
+    PONC_toSpace = ["'","\n\n","\n"," "] # char that should be changed to a space
 
     def set_ponc(self, value):
         """DÃ©termine si les signes de ponctuation sont conservÃ©s (True) ou Ã©liminÃ©s (False)
@@ -181,21 +182,6 @@ class markov():
         Returns:
             resultats (Liste[(string,float)]) : Liste de tuples (auteurs, niveau de proximitÃ©), oÃ¹ la proximitÃ© est un nombre entre 0 et 1)
         """
-        with open(oeuvre, 'r', encoding='UTF-8') as currentFile:  # open the file
-            currentText = currentFile.read()  # file to string
-
-            for p in self.PONC:  # remove ponctuation
-                currentText = currentText.replace(p, "")
-            for p_space in self.PONC_toSpace:  # change some ponctuation to a [space]
-                currentText = currentText.replace(p_space, " ")
-            print("file splitted")
-            # add current text to the word list of the corresponding autor
-            currentTextSplitted = []  # text as a list
-            currentTextSplitted.append(currentText.split(" "))
-            currentTextFiltered = []  # text as a list with words above 2 letters
-            for word in currentTextSplitted:
-                if len(word) > 2:
-                    currentTextFiltered.append(word)
 
         resultats = [("balzac", 0.1234), ("voltaire", 0.1123)]   # Exemple du format des sorties
 
@@ -262,10 +248,12 @@ class markov():
         #   De cette faÃ§on, les mots d'un court poÃ¨me auraient une importance beaucoup plus grande que
         #   les mots d'une trÃ¨s longue oeuvre du mÃªme auteur. Ce n'est PAS ce qui vous est demandÃ© ici.
 
-        splitedTexts = [] # list of all wordlist
-        for currentAutor in self.auteurs: # for a single autor
-            splitedTexts.append([])
-            for currentFilePath in self.get_aut_files(currentAutor): # for a text of that autor
+        splitedTexts = {"Balzac": [], "Hugo": [], "Ségur": [], "Verne": [], "Voltaire": [], "Zola": []} #dict that contains all the texts, keyx are the authors
+
+        for key in splitedTexts.keys(): # for a single autor
+
+
+            for currentFilePath in self.get_aut_files(key): # for a text of that autor
                 #print("auteur: " + currentAutor + " / current file: " + currentFilePath)
                 with open(currentFilePath, 'r', encoding='UTF-8') as currentFile: # open the file
                     currentText = currentFile.read() # file to string
@@ -277,47 +265,37 @@ class markov():
                     print("file splitted")
                     # add current text to the word list of the corresponding autor
                     currentTextSplitted = []  # text as a list
-                    currentTextSplitted.append(currentText.split(" "))
+                    currentTextSplitted.extend(currentText.split(" "))
+
                     currentTextFiltered = []  # text as a list with words above 2 letters
                     for word in currentTextSplitted:
                         if len(word) > 2:
-                            currentTextFiltered.extend(word)
-                    splitedTexts[self.auteurs.index(currentAutor)].extend(currentTextFiltered)
+                            splitedTexts[key].append(word)
+                    #splitedTexts[self.auteurs.index(currentAutor)].extend(currentTextFiltered)
                     # add current text to the word list of the corresponding autor
                     #print(len(splitedTexts[self.auteurs.index(currentAutor)]))
         #print(len(splitedTexts))
 
         #for dict in self.dicts:
-
-        for wordList in splitedTexts:
+        for key in self.dicts.keys(): # for a single dict in the nested dict
             # do something with the word list of the current autor
             # example: split into [Bigramme], [Trigramme], [n-gramme]
-
-
-            count = 0
-
-            ngram_dict: dict = {}
-
-            for word in wordList:
-
-                count+=1
-                if count%10000 == 0:
-                    print(count)
+            print(key)
+            somme =0
+            wordList = splitedTexts[key]
+            print(len(wordList))
+            for word in wordList: # for each word in a single author
+                somme+=1
+                if(somme%10000==0):
+                    print(somme)
                 ng = ngram()
                 ng.append(word)
-
                 for i in range(wordList.index(word)+1, wordList.index(word)+self.ngram):
-
                     ng.append(wordList[i])
-
-                
-                if ng in ngram_dict:
-                    ngram_dict[ng]+=1
-
+                if ng in self.dicts[key]:
+                    self.dicts[key][ng]+=1
                 else :
-                    ngram_dict[ng] =1
-            count = 0
-            print("autor done")
+                    self.dicts[key][ng] =1
 
 
 
