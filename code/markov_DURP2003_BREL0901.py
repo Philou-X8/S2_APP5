@@ -26,6 +26,7 @@ import os
 import glob
 import ntpath
 import math
+import random
 class ngram():
     def __init__(self):
         self.gram = []
@@ -271,7 +272,9 @@ class markov():
         """
         file = open(textname,"w")
 
-        file.write("gjspkmsg")
+        chaine = random.choice(list(self.dicts[auteur].keys())).string()
+
+        file.write(chaine)
 
         file.close()
         return
