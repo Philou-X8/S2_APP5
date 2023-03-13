@@ -29,6 +29,8 @@ import math
 class ngram():
     def __init__(self):
         self.gram = []
+        self.nextWord = {}
+
 
     def append(self, word):
         self.gram.append(word)
@@ -286,11 +288,23 @@ class markov():
         """
         # -a pour choisir l'auteur
         # -F pour setter le n-gramme
-        sortedNgram = sorted(self.dicts[auteur].items(), key=lambda item: item[1], reverse=True)
-        print(sorted(self.dicts[auteur].values(),reverse = True))
-        returnList = []
 
+        sortedNgram = sorted(self.dicts[auteur].items(), key=lambda item: item[1], reverse=True)
+        if n > len(sortedNgram):
+            return [[]]
+        returnList = []
         returnList.append(sortedNgram[n][0].gram)
+
+        frequency = sortedNgram[n][1]
+        offset = 1
+        while sortedNgram[n-offset][1] == frequency:
+            returnList.append(sortedNgram[n-offset][0].gram)
+            offset += 1
+        offset = 1
+        while sortedNgram[n+offset][1] == frequency:
+            returnList.append(sortedNgram[n+offset][0].gram)
+            offset += 1
+
         return returnList
 
 
@@ -349,12 +363,12 @@ class markov():
         #print(len(splitedTexts))
 
         #for dict in self.dicts:
-        for key in self.dicts.keys(): # for a single dict in the nested dict
+        for autorKey in self.dicts.keys(): # for a single dict in the nested dict
             # do something with the word list of the current autor
             # example: split into [Bigramme], [Trigramme], [n-gramme]
 
 
-            wordList = splitedTexts[key]
+            wordList = splitedTexts[autorKey]
 
 
 
@@ -369,10 +383,26 @@ class markov():
                     if(i<len(wordList)):
                         ng.append(wordList[i])
 
-                if ng in self.dicts[key]:
-                    self.dicts[key][ng]+=1
+
+                if ng in self.dicts[autorKey]:
+                    self.dicts[autorKey][ng] += 1
                 else :
-                    self.dicts[key][ng] =1
+                    self.dicts[autorKey][ng] = 1
+                #print(list(self.dicts[autorKey].keys()))
+                #print(list(self.dicts[autorKey].keys())[-1].nextWord)
+
+                if ((wordList.index(word) + self.ngram) < len(wordList)):
+                    nextW = wordList[wordList.index(word) + self.ngram]
+                    if nextW in list(self.dicts[autorKey].keys())[-1].nextWord:
+                        list(self.dicts[autorKey].keys())[-1].nextWord[nextW] += 1
+                    else:
+                        list(self.dicts[autorKey].keys())[-1].nextWord[nextW] = 1
+
+                #print("test")
+
+
+
+
 
 
 
