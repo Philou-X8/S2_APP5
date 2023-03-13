@@ -221,8 +221,12 @@ class markov():
         Returns:
             ngram (List[Liste[string]]) : Liste de liste de mots composant le n-gramme recherchÃ© (il est possible qu'il y ait plus d'un n-gramme au mÃªme rang)
         """
-        ngram = [['un', 'roman']]   # Exemple du format de sortie d'un bigramme
-        return ngram
+        # -a pour choisir l'auteur
+        # -F pour setter le n-gramme
+        sortedNgram = sorted(self.dicts[auteur].items(), key=lambda item: item[1], reverse=True)
+        returnList = []
+        returnList.append(sortedNgram[n][0].gram)
+        return returnList
 
 
     def analyze(self):
@@ -284,7 +288,13 @@ class markov():
 
             wordList = splitedTexts[key]
 
+            counter = 0
+
             for word in wordList: # for each word in a single author
+
+                counter += 1
+                if counter % 10000 == 0:
+                    print(counter)
 
                 ng = ngram()
                 ng.append(word)
