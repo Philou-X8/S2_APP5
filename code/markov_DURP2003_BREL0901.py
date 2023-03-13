@@ -65,7 +65,7 @@ class markov():
     # Le code qui suit est fourni pour vous faciliter la vie.  Il n'a pas Ã  Ãªtre modifiÃ©
     # Signes de ponctuation Ã  retirer (complÃ©ter la liste qui ne comprend que "!" et "," au dÃ©part)
     PONC = ["!","?",",",".","--",";",":","_","...","«","»","(",")","[","]"] # char that should be removed
-    PONC_toSpace = ["'","\n\n","\n"," ","    ","   ","  "] # char that should be changed to a space
+    PONC_toSpace = ["'","\n\n","\n"," "] # char that should be changed to a space
 
     def set_ponc(self, value):
         """DÃ©termine si les signes de ponctuation sont conservÃ©s (True) ou Ã©liminÃ©s (False)
@@ -260,7 +260,15 @@ class markov():
                         currentText = currentText.replace(p, "")
                     for p_space in self.PONC_toSpace: # change some ponctuation to a [space]
                         currentText = currentText.replace(p_space, " ")
-
+                    print("file splitted")
+                    # add current text to the word list of the corresponding autor
+                    currentTextSplitted = []  # text as a list
+                    currentTextSplitted.append(currentText.split(" "))
+                    currentTextFiltered = []  # text as a list with words above 2 letters
+                    for word in currentTextSplitted:
+                        if len(word) > 2:
+                            currentTextFiltered.append(word)
+                    splitedTexts[self.auteurs.index(currentAutor)].extend(currentTextFiltered)
                     # add current text to the word list of the corresponding autor
                     splitedTexts[self.auteurs.index(currentAutor)].extend(currentText.split(" "))
                     #print(len(splitedTexts[self.auteurs.index(currentAutor)]))
