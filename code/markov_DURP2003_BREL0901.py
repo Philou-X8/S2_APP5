@@ -25,6 +25,7 @@
 import os
 import glob
 import ntpath
+import math
 class ngram():
     def __init__(self):
         self.gram = []
@@ -50,6 +51,23 @@ class ngram():
         return self.string()== other.string()
     def __ne__(self, other):
         return not self.__eq__(other)
+
+
+def produitScalaire(dict1,dict2 ):
+
+    somme =0
+
+
+    for key in dict1:
+        if key in dict2:
+            somme+= dict2[key]*dict1[key]
+    return somme
+def module(dict):
+    somme = 0
+    for value in dict.values():
+        somme += value ** 2
+    return math.sqrt(somme)
+
 class markov():
     """Classe Ã  utiliser pour coder la solution Ã  la problÃ©matique:
 
@@ -159,7 +177,7 @@ class markov():
         self.rep_aut = os.getcwd()
         self.auteurs = []
         self.ngram = 1
-        self.dicts = {"Balzac":{} ,"Hugo":{},"Ségur": {}, "Verne":{},"Voltaire":{},"Zola":{} }
+        self.dicts = {}
         # Au besoin, ajouter votre code d'initialisation de l'objet de type markov lors de sa crÃ©ation
 
         return
@@ -172,8 +190,6 @@ class markov():
     # La fonction analyse() est appelÃ©e en premier par testmarkov.py
     # Ensuite, selon ce qui est demandÃ©, les fonctions find_author(), gen_text() ou get_nth_element() sont appelÃ©es
 
-    def produitScalaire(self, dict : dict):
-        return
 
     def find_author(self, oeuvre):
         """AprÃ¨s analyse des textes d'auteurs connus, retourner la liste d'auteurs
@@ -223,7 +239,8 @@ class markov():
         resultats = []
 
         for key in self.dicts:
-            resultats.append()
+            formule = produitScalaire(self.dicts[key],dictOeuvre)/(module(self.dicts[key])*module(dictOeuvre))
+            resultats.append((key,formule))
 
         #resultats = [("balzac", 0.1234), ("voltaire", 0.1123)]   # Exemple du format des sorties
 
@@ -293,8 +310,11 @@ class markov():
         #       avant des les additionner pour obtenir le vecteur global d'un auteur
         #   De cette faÃ§on, les mots d'un court poÃ¨me auraient une importance beaucoup plus grande que
         #   les mots d'une trÃ¨s longue oeuvre du mÃªme auteur. Ce n'est PAS ce qui vous est demandÃ© ici.
+        splitedTexts={}
+        for auteur in self.auteurs:
+            self.dicts[auteur]={}
+            splitedTexts[auteur]=[]
 
-        splitedTexts = {"Balzac": [], "Hugo": [], "Ségur": [], "Verne": [], "Voltaire": [], "Zola": []} #dict that contains all the texts, keyx are the authors
 
         for key in splitedTexts.keys(): # for a single autor
 
@@ -330,13 +350,11 @@ class markov():
 
             wordList = splitedTexts[key]
 
-            counter = 0
+
 
             for word in wordList: # for each word in a single author
 
-                counter += 1
-                if counter % 10000 == 0:
-                    print(counter)
+
 
                 ng = ngram()
                 ng.append(word)
