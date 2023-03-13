@@ -28,6 +28,8 @@ import ntpath
 class ngram():
     def __init__(self):
         self.gram = []
+        self.nextWord = {}
+
 
     def append(self, word):
         self.gram.append(word)
@@ -303,10 +305,26 @@ class markov():
                     if(i<len(wordList)):
                         ng.append(wordList[i])
 
-                        if ng in self.dicts[autorKey]:
-                            self.dicts[autorKey][ng]+=1
-                        else :
-                            self.dicts[autorKey][ng] =1
+
+                if ng in self.dicts[autorKey]:
+                    self.dicts[autorKey][ng] += 1
+                else :
+                    self.dicts[autorKey][ng] = 1
+                #print(list(self.dicts[autorKey].keys()))
+                #print(list(self.dicts[autorKey].keys())[-1].nextWord)
+
+                if ((wordList.index(word) + self.ngram) < len(wordList)):
+                    nextW = wordList[wordList.index(word) + self.ngram]
+                    if nextW in list(self.dicts[autorKey].keys())[-1].nextWord:
+                        list(self.dicts[autorKey].keys())[-1].nextWord[nextW] += 1
+                    else:
+                        list(self.dicts[autorKey].keys())[-1].nextWord[nextW] = 1
+
+                #print("test")
+
+
+
+
 
 
 
