@@ -37,9 +37,9 @@ class ngram():
         for word in self.gram:
             str += word + " "
         return  str
-    def __hash__(self):
+    """def __hash__(self):
 
-        return hash(self.string())
+        return hash(self.string())"""
     def __eq__(self, other):
         if len(self.gram) != len(other.gram):
             return  False
@@ -246,9 +246,11 @@ class markov():
         #   De cette faÃ§on, les mots d'un court poÃ¨me auraient une importance beaucoup plus grande que
         #   les mots d'une trÃ¨s longue oeuvre du mÃªme auteur. Ce n'est PAS ce qui vous est demandÃ© ici.
 
-        splitedTexts = [] # list of all wordlist
-        for currentAutor in self.auteurs: # for a single autor
-            splitedTexts.append([])
+        splitedTexts = {"Balzac": [], "Hugo": [], "Ségur": [], "Verne": [], "Voltaire": [], "Zola": []} #dict that contains all the texts, keyx are the authors
+
+        for auteur in self.auteurs: # for a single autor
+            splitedTexts[auteur].append([])
+
             for currentFilePath in self.get_aut_files(currentAutor): # for a text of that autor
                 #print("auteur: " + currentAutor + " / current file: " + currentFilePath)
                 with open(currentFilePath, 'r', encoding='UTF-8') as currentFile: # open the file
@@ -266,16 +268,15 @@ class markov():
 
         #for dict in self.dicts:
 
-        for wordList in splitedTexts:
+        for dict in self.dicts: # for a single dict in the nested dict
             # do something with the word list of the current autor
             # example: split into [Bigramme], [Trigramme], [n-gramme]
 
 
 
 
-            ngram_dict: dict = {}
 
-            for word in wordList:
+            for word in wordList: # for each word in a single author
 
                 ng = ngram()
                 ng.append(word)
@@ -286,10 +287,10 @@ class markov():
 
                 
                 if ng in ngram_dict:
-                    ngram_dict[ng]+=1
+                    dict[ng]+=1
 
                 else :
-                    ngram_dict[ng] =1
+                    dict[ng] =1
 
 
 
