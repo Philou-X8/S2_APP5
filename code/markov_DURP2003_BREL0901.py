@@ -32,19 +32,20 @@ class ngram():
     def append(self, word):
         self.gram.append(word)
 
-    def __hash__(self):
+    def string(self):
         str = ""
-        for word in self.gram :
-            str+=word
+        for word in self.gram:
+            str += word + " "
+        return  str
+    def __hash__(self):
 
-        return hash(str)
+        return hash(self.string())
     def __eq__(self, other):
         if len(self.gram) != len(other.gram):
             return  False
-        for i in range(len(self.gram)):
-            if self.gram[i] !=  other.gram[i] :
-                return False
-        return True
+
+
+        return self.string()== other.string()
     def __ne__(self, other):
         return not self.__eq__(other)
 class markov():
@@ -64,7 +65,7 @@ class markov():
     # Le code qui suit est fourni pour vous faciliter la vie.  Il n'a pas Ã  Ãªtre modifiÃ©
     # Signes de ponctuation Ã  retirer (complÃ©ter la liste qui ne comprend que "!" et "," au dÃ©part)
     PONC = ["!","?",",",".","--",";",":","_","...","«","»","(",")","[","]"] # char that should be removed
-    PONC_toSpace = ["'","\n\n","\n"," "] # char that should be changed to a space
+    PONC_toSpace = ["'","\n\n","\n"," ","    ","   ","  "] # char that should be changed to a space
 
     def set_ponc(self, value):
         """DÃ©termine si les signes de ponctuation sont conservÃ©s (True) ou Ã©liminÃ©s (False)
@@ -156,7 +157,7 @@ class markov():
         self.rep_aut = os.getcwd()
         self.auteurs = []
         self.ngram = 1
-
+        self.dicts = {"Balzac":{} ,"Hugo":{},"Ségur": {}, "Verne":{},"Voltaire":{},"Zola":{} }
         # Au besoin, ajouter votre code d'initialisation de l'objet de type markov lors de sa crÃ©ation
 
         return
@@ -248,45 +249,48 @@ class markov():
         splitedTexts = [] # list of all wordlist
         for currentAutor in self.auteurs: # for a single autor
             splitedTexts.append([])
-            filteredWordList = []
             for currentFilePath in self.get_aut_files(currentAutor): # for a text of that autor
-                print("auteur: " + currentAutor + " / current file: " + currentFilePath)
+                #print("auteur: " + currentAutor + " / current file: " + currentFilePath)
                 with open(currentFilePath, 'r', encoding='UTF-8') as currentFile: # open the file
                     currentText = currentFile.read() # file to string
-                    print("file oppened")
+
                     for p in self.PONC: # remove ponctuation
                         currentText = currentText.replace(p, "")
                     for p_space in self.PONC_toSpace: # change some ponctuation to a [space]
                         currentText = currentText.replace(p_space, " ")
-                    print("file splitted")
+
                     # add current text to the word list of the corresponding autor
-                    currentTextSplitted = [] # text as a list
-                    currentTextSplitted.append(currentText.split(" "))
-                    currentTextFiltered = [] # text as a list with words above 2 letters
-                    for word in currentTextSplitted:
-                        if len(word) > 2:
-                            currentTextFiltered.append(word)
-                    splitedTexts[self.auteurs.index(currentAutor)].extend(currentTextFiltered)
-                    #print(splitedTexts[self.auteurs.index(currentAutor)])
+                    splitedTexts[self.auteurs.index(currentAutor)].extend(currentText.split(" "))
+                    #print(len(splitedTexts[self.auteurs.index(currentAutor)]))
         #print(len(splitedTexts))
-        ngram_dict :dict ={}
-        ng = ngram()
+
+        #for dict in self.dicts:
+
         for wordList in splitedTexts:
             # do something with the word list of the current autor
             # example: split into [Bigramme], [Trigramme], [n-gramme]
 
+
+
+
+            ngram_dict: dict = {}
+
             for word in wordList:
+
+                ng = ngram()
                 ng.append(word)
 
-                for i in range(wordList.index(word) + 1, wordList.index(word) + self.ngram):
+                for i in range(wordList.index(word)+1, wordList.index(word)+self.ngram):
+
                     ng.append(wordList[i])
 
+                
                 if ng in ngram_dict:
                     ngram_dict[ng]+=1
 
-
                 else :
                     ngram_dict[ng] =1
+
 
 
         return
