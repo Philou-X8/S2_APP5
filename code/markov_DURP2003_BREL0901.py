@@ -64,7 +64,7 @@ class markov():
     # Le code qui suit est fourni pour vous faciliter la vie.  Il n'a pas Ã  Ãªtre modifiÃ©
     # Signes de ponctuation Ã  retirer (complÃ©ter la liste qui ne comprend que "!" et "," au dÃ©part)
     PONC = ["!","?",",",".","--",";",":","_","...","«","»","(",")","[","]"] # char that should be removed
-    PONC_toSpace = ["'","\n\n","\n"," ","    ","   ","  "] # char that should be changed to a space
+    PONC_toSpace = ["'","\n\n","\n"," "] # char that should be changed to a space
 
     def set_ponc(self, value):
         """DÃ©termine si les signes de ponctuation sont conservÃ©s (True) ou Ã©liminÃ©s (False)
@@ -248,19 +248,26 @@ class markov():
         splitedTexts = [] # list of all wordlist
         for currentAutor in self.auteurs: # for a single autor
             splitedTexts.append([])
+            filteredWordList = []
             for currentFilePath in self.get_aut_files(currentAutor): # for a text of that autor
-                #print("auteur: " + currentAutor + " / current file: " + currentFilePath)
+                print("auteur: " + currentAutor + " / current file: " + currentFilePath)
                 with open(currentFilePath, 'r', encoding='UTF-8') as currentFile: # open the file
                     currentText = currentFile.read() # file to string
-
+                    print("file oppened")
                     for p in self.PONC: # remove ponctuation
                         currentText = currentText.replace(p, "")
                     for p_space in self.PONC_toSpace: # change some ponctuation to a [space]
                         currentText = currentText.replace(p_space, " ")
-
+                    print("file splitted")
                     # add current text to the word list of the corresponding autor
-                    splitedTexts[self.auteurs.index(currentAutor)].extend(currentText.split(" "))
-                    #print(len(splitedTexts[self.auteurs.index(currentAutor)]))
+                    currentTextSplitted = [] # text as a list
+                    currentTextSplitted.append(currentText.split(" "))
+                    currentTextFiltered = [] # text as a list with words above 2 letters
+                    for word in currentTextSplitted:
+                        if len(word) > 2:
+                            currentTextFiltered.append(word)
+                    splitedTexts[self.auteurs.index(currentAutor)].extend(currentTextFiltered)
+                    #print(splitedTexts[self.auteurs.index(currentAutor)])
         #print(len(splitedTexts))
         ngram_dict :dict ={}
         ng = ngram()
@@ -271,7 +278,7 @@ class markov():
             for word in wordList:
                 ng.append(word)
 
-                for i in range(wordList.index(word)+1, wordList.index(word)+self.ngram):
+                for i in range(wordList.index(word) + 1, wordList.index(word) + self.ngram):
                     ng.append(wordList[i])
 
                 if ng in ngram_dict:
