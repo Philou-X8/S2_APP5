@@ -61,13 +61,18 @@ def produitScalaire(dict1,dict2 ):
 
 
     for key in dict1:
+
         if key in dict2:
-            somme+= dict2[key]*dict1[key]
+            somme+= dict2[key]*dict1[key][0]
     return somme
 def module(dict):
     somme = 0
     for value in dict.values():
-        somme += value ** 2
+        if isinstance(value, int):
+            somme += value ** 2
+        else:
+            somme += value[0] ** 2
+
     return math.sqrt(somme)
 
 class markov():
@@ -252,7 +257,7 @@ class markov():
         resultats = []
 
         for key in self.dicts:
-            formule = produitScalaire(self.dicts[key],dictOeuvre)/(module(self.dicts[key])*module(dictOeuvre))
+            formule = produitScalaire(self.dicts[key], dictOeuvre) / (module(self.dicts[key]) * module(dictOeuvre))
             resultats.append((key,formule))
 
         #resultats = [("balzac", 0.1234), ("voltaire", 0.1123)]   # Exemple du format des sorties
@@ -285,9 +290,15 @@ class markov():
 
         TextWordList.extend(writerBuffer)
         for i in range(len(writerBuffer) , taille):
+
             currentNgram = ngram()
             for word in writerBuffer:
                 currentNgram.append(word)
+            print("------new line_______")
+            print(currentNgram.gram)
+            print(self.dicts[auteur].get(currentNgram))
+            #print(list(self.dicts[auteur].get(currentNgram)))
+            #keyList = list(self.dicts[auteur].get(currentNgram))
             keyList = [key for key in self.dicts[auteur][currentNgram]]
             keyList = keyList[1::]
             valueList = [value for value in self.dicts[auteur][currentNgram].values()]
@@ -296,6 +307,7 @@ class markov():
             TextWordList.extend(newWord)
             writerBuffer.extend(newWord)
             writerBuffer.pop(0)
+            del (currentNgram)
 
 
         with open(textname, 'w', encoding='UTF-8') as outputFile:
@@ -430,7 +442,7 @@ class markov():
                     self.dicts[autorKey][ng].update({0: 1})
 
                 if (counter + self.ngram) < len(wordList):
-                    wordFollowup = wordList[counter + self.ngram]
+                    wordFollowup = wordList[counter + self.ngram -1]
                     if wordFollowup in self.dicts[autorKey][ng]:
                         self.dicts[autorKey][ng][wordFollowup] += 1
                     else:
