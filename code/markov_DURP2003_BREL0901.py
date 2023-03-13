@@ -34,12 +34,14 @@ class ngram():
 
     def string(self):
         str = ""
+       # print(self.gram)
         for word in self.gram:
+
             str += word + " "
         return  str
-    """def __hash__(self):
+    def __hash__(self):
 
-        return hash(self.string())"""
+        return hash(self.string())
     def __eq__(self, other):
         if len(self.gram) != len(other.gram):
             return  False
@@ -248,10 +250,10 @@ class markov():
 
         splitedTexts = {"Balzac": [], "Hugo": [], "Ségur": [], "Verne": [], "Voltaire": [], "Zola": []} #dict that contains all the texts, keyx are the authors
 
-        for auteur in self.auteurs: # for a single autor
-            splitedTexts[auteur].append([])
+        for key in splitedTexts.keys(): # for a single autor
 
-            for currentFilePath in self.get_aut_files(currentAutor): # for a text of that autor
+
+            for currentFilePath in self.get_aut_files(key): # for a text of that autor
                 #print("auteur: " + currentAutor + " / current file: " + currentFilePath)
                 with open(currentFilePath, 'r', encoding='UTF-8') as currentFile: # open the file
                     currentText = currentFile.read() # file to string
@@ -263,42 +265,37 @@ class markov():
                     print("file splitted")
                     # add current text to the word list of the corresponding autor
                     currentTextSplitted = []  # text as a list
-                    currentTextSplitted.append(currentText.split(" "))
+                    currentTextSplitted.extend(currentText.split(" "))
+
                     currentTextFiltered = []  # text as a list with words above 2 letters
                     for word in currentTextSplitted:
                         if len(word) > 2:
-                            currentTextFiltered.append(word)
-                    splitedTexts[self.auteurs.index(currentAutor)].extend(currentTextFiltered)
+                            splitedTexts[key].append(word)
+                    #splitedTexts[self.auteurs.index(currentAutor)].extend(currentTextFiltered)
                     # add current text to the word list of the corresponding autor
-                    splitedTexts[self.auteurs.index(currentAutor)].extend(currentText.split(" "))
                     #print(len(splitedTexts[self.auteurs.index(currentAutor)]))
         #print(len(splitedTexts))
 
         #for dict in self.dicts:
-
-        for dict in self.dicts: # for a single dict in the nested dict
+        for key in self.dicts.keys(): # for a single dict in the nested dict
             # do something with the word list of the current autor
             # example: split into [Bigramme], [Trigramme], [n-gramme]
-
-
-
-
-
+            print(key)
+            somme =0
+            wordList = splitedTexts[key]
+            print(len(wordList))
             for word in wordList: # for each word in a single author
-
+                somme+=1
+                if(somme%10000==0):
+                    print(somme)
                 ng = ngram()
                 ng.append(word)
-
                 for i in range(wordList.index(word)+1, wordList.index(word)+self.ngram):
-
                     ng.append(wordList[i])
-
-                
-                if ng in ngram_dict:
-                    dict[ng]+=1
-
+                if ng in self.dicts[key]:
+                    self.dicts[key][ng]+=1
                 else :
-                    dict[ng] =1
+                    self.dicts[key][ng] =1
 
 
 
