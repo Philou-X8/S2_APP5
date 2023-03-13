@@ -172,6 +172,9 @@ class markov():
     # La fonction analyse() est appelÃ©e en premier par testmarkov.py
     # Ensuite, selon ce qui est demandÃ©, les fonctions find_author(), gen_text() ou get_nth_element() sont appelÃ©es
 
+    def produitScalaire(self, dict : dict):
+        return
+
     def find_author(self, oeuvre):
         """AprÃ¨s analyse des textes d'auteurs connus, retourner la liste d'auteurs
             et le niveau de proximitÃ© (un nombre entre 0 et 1) de l'oeuvre inconnue avec les Ã©crits de chacun d'entre eux
@@ -183,7 +186,46 @@ class markov():
             resultats (Liste[(string,float)]) : Liste de tuples (auteurs, niveau de proximitÃ©), oÃ¹ la proximitÃ© est un nombre entre 0 et 1)
         """
 
-        resultats = [("balzac", 0.1234), ("voltaire", 0.1123)]   # Exemple du format des sorties
+        #ouverture et lecture du fichier
+        file =open(oeuvre, "r")
+        currentText = file.read() #file in a string
+
+        ##text formating
+        for p in self.PONC:  # remove ponctuation
+            currentText = currentText.replace(p, "")
+        for p_space in self.PONC_toSpace:  # change some ponctuation to a [space]
+            currentText = currentText.replace(p_space, " ")
+
+        currentTextSplitted = []  # text as a list
+        currentTextSplitted.extend(currentText.split(" "))
+        currentTextFiltered =[]
+        for word in currentTextSplitted:
+
+            if len(word) > 2:
+                currentTextFiltered.append(word)
+
+        dictOeuvre = {}
+        for word in currentTextFiltered:
+            ng = ngram()
+            ng.append(word)
+
+            for i in range(currentTextFiltered.index(word) + 1, currentTextSplitted.index(word) + self.ngram):
+                if (i < len(currentTextFiltered)):
+                    ng.append(currentTextFiltered[i])
+
+            if ng in dictOeuvre:
+                dictOeuvre[ng] += 1
+            else:
+                dictOeuvre[ng] = 1
+
+
+
+        resultats = []
+
+        for key in self.dicts:
+            resultats.append()
+
+        #resultats = [("balzac", 0.1234), ("voltaire", 0.1123)]   # Exemple du format des sorties
 
 
         # Ajouter votre code pour dÃ©terminer la proximitÃ© du fichier passÃ© en paramÃ¨tre avec chacun des auteurs
@@ -262,7 +304,7 @@ class markov():
                         currentText = currentText.replace(p, "")
                     for p_space in self.PONC_toSpace: # change some ponctuation to a [space]
                         currentText = currentText.replace(p_space, " ")
-                    print("file splitted")
+                    #print("file splitted")
                     # add current text to the word list of the corresponding autor
                     currentTextSplitted = []  # text as a list
                     currentTextSplitted.extend(currentText.split(" "))
@@ -280,7 +322,7 @@ class markov():
         for key in self.dicts.keys(): # for a single dict in the nested dict
             # do something with the word list of the current autor
             # example: split into [Bigramme], [Trigramme], [n-gramme]
-            print(key)
+
 
             wordList = splitedTexts[key]
 
@@ -293,10 +335,10 @@ class markov():
                     if(i<len(wordList)):
                         ng.append(wordList[i])
 
-                        if ng in self.dicts[key]:
-                            self.dicts[key][ng]+=1
-                        else :
-                            self.dicts[key][ng] =1
+                if ng in self.dicts[key]:
+                    self.dicts[key][ng]+=1
+                else :
+                    self.dicts[key][ng] =1
 
 
 

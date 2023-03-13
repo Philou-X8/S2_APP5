@@ -276,6 +276,7 @@ if __name__ == "__main__":
         except:
             print('L\'oeuvre ', tm.oeuvre, ' n\'est pas un lien symbolique')
 
+
     for cip in tm.cips:   # Permet de tester le code d'une ou plusieurs Ã©quipes, Ã  tour de rÃ´le
         tm.import_markov_cip(cip)
         tm.markov = tm.markov_module.markov()
