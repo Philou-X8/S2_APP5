@@ -25,6 +25,7 @@
 import os
 import glob
 import ntpath
+import math
 class ngram():
     def __init__(self):
         self.gram = []
@@ -50,6 +51,23 @@ class ngram():
         return self.string()== other.string()
     def __ne__(self, other):
         return not self.__eq__(other)
+
+
+def produitScalaire(dict1,dict2 ):
+
+    somme =0
+
+
+    for key in dict1:
+        if key in dict2:
+            somme+= dict2[key]*dict1[key]
+    return somme
+def module(dict):
+    somme = 0
+    for value in dict.values():
+        somme += value ** 2
+    return math.sqrt(somme)
+
 class markov():
     """Classe Ã  utiliser pour coder la solution Ã  la problÃ©matique:
 
@@ -159,7 +177,7 @@ class markov():
         self.rep_aut = os.getcwd()
         self.auteurs = []
         self.ngram = 1
-        self.dicts = {"Balzac":{} ,"Hugo":{},"Ségur": {}, "Verne":{},"Voltaire":{},"Zola":{} }
+        self.dicts = {}
         # Au besoin, ajouter votre code d'initialisation de l'objet de type markov lors de sa crÃ©ation
 
         return
@@ -172,6 +190,7 @@ class markov():
     # La fonction analyse() est appelÃ©e en premier par testmarkov.py
     # Ensuite, selon ce qui est demandÃ©, les fonctions find_author(), gen_text() ou get_nth_element() sont appelÃ©es
 
+
     def find_author(self, oeuvre):
         """AprÃ¨s analyse des textes d'auteurs connus, retourner la liste d'auteurs
             et le niveau de proximitÃ© (un nombre entre 0 et 1) de l'oeuvre inconnue avec les Ã©crits de chacun d'entre eux
@@ -183,7 +202,47 @@ class markov():
             resultats (Liste[(string,float)]) : Liste de tuples (auteurs, niveau de proximitÃ©), oÃ¹ la proximitÃ© est un nombre entre 0 et 1)
         """
 
-        resultats = [("balzac", 0.1234), ("voltaire", 0.1123)]   # Exemple du format des sorties
+        #ouverture et lecture du fichier
+        file =open(oeuvre, "r")
+        currentText = file.read() #file in a string
+
+        ##text formating
+        for p in self.PONC:  # remove ponctuation
+            currentText = currentText.replace(p, "")
+        for p_space in self.PONC_toSpace:  # change some ponctuation to a [space]
+            currentText = currentText.replace(p_space, " ")
+
+        currentTextSplitted = []  # text as a list
+        currentTextSplitted.extend(currentText.split(" "))
+        currentTextFiltered =[]
+        for word in currentTextSplitted:
+
+            if len(word) > 2:
+                currentTextFiltered.append(word)
+
+        dictOeuvre = {}
+        for word in currentTextFiltered:
+            ng = ngram()
+            ng.append(word)
+
+            for i in range(currentTextFiltered.index(word) + 1, currentTextSplitted.index(word) + self.ngram):
+                if (i < len(currentTextFiltered)):
+                    ng.append(currentTextFiltered[i])
+
+            if ng in dictOeuvre:
+                dictOeuvre[ng] += 1
+            else:
+                dictOeuvre[ng] = 1
+
+
+
+        resultats = []
+
+        for key in self.dicts:
+            formule = produitScalaire(self.dicts[key],dictOeuvre)/(module(self.dicts[key])*module(dictOeuvre))
+            resultats.append((key,formule))
+
+        #resultats = [("balzac", 0.1234), ("voltaire", 0.1123)]   # Exemple du format des sorties
 
 
         # Ajouter votre code pour dÃ©terminer la proximitÃ© du fichier passÃ© en paramÃ¨tre avec chacun des auteurs
@@ -251,8 +310,11 @@ class markov():
         #       avant des les additionner pour obtenir le vecteur global d'un auteur
         #   De cette faÃ§on, les mots d'un court poÃ¨me auraient une importance beaucoup plus grande que
         #   les mots d'une trÃ¨s longue oeuvre du mÃªme auteur. Ce n'est PAS ce qui vous est demandÃ© ici.
+        splitedTexts={}
+        for auteur in self.auteurs:
+            self.dicts[auteur]={}
+            splitedTexts[auteur]=[]
 
-        splitedTexts = {"Balzac": [], "Hugo": [], "Ségur": [], "Verne": [], "Voltaire": [], "Zola": []} #dict that contains all the texts, keyx are the authors
 
         for key in splitedTexts.keys(): # for a single autor
 
@@ -266,7 +328,7 @@ class markov():
                         currentText = currentText.replace(p, "")
                     for p_space in self.PONC_toSpace: # change some ponctuation to a [space]
                         currentText = currentText.replace(p_space, " ")
-                    print("file splitted")
+                    #print("file splitted")
                     # add current text to the word list of the corresponding autor
                     currentTextSplitted = []  # text as a list
                     currentTextSplitted.extend(currentText.split(" "))
@@ -281,20 +343,18 @@ class markov():
         #print(len(splitedTexts))
 
         #for dict in self.dicts:
-        for autorKey in self.dicts.keys(): # for a single dict in the nested dict
+        for key in self.dicts.keys(): # for a single dict in the nested dict
             # do something with the word list of the current autor
             # example: split into [Bigramme], [Trigramme], [n-gramme]
-            print(autorKey)
 
-            wordList = splitedTexts[autorKey]
 
-            counter = 0
+            wordList = splitedTexts[key]
+
+
 
             for word in wordList: # for each word in a single author
 
-                counter += 1
-                if counter % 10000 == 0:
-                    print(counter)
+
 
                 ng = ngram()
                 ng.append(word)
@@ -303,10 +363,10 @@ class markov():
                     if(i<len(wordList)):
                         ng.append(wordList[i])
 
-                        if ng in self.dicts[autorKey]:
-                            self.dicts[autorKey][ng]+=1
-                        else :
-                            self.dicts[autorKey][ng] =1
+                if ng in self.dicts[key]:
+                    self.dicts[key][ng]+=1
+                else :
+                    self.dicts[key][ng] =1
 
 
 
