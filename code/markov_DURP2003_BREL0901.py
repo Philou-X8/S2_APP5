@@ -205,7 +205,7 @@ class markov():
         #ouverture et lecture du fichier
         file =open(oeuvre, "r")
         currentText = file.read() #file in a string
-
+        file.close()
         ##text formating
         for p in self.PONC:  # remove ponctuation
             currentText = currentText.replace(p, "")
@@ -267,7 +267,11 @@ class markov():
         Returns:
             void : ne retourne rien, le texte produit doit Ãªtre Ã©crit dans le fichier "textname"
         """
+        file = open(textname,"w")
 
+        file.write("gjspkmsg")
+
+        file.close()
         return
 
     def get_nth_element(self, auteur, n):
@@ -283,7 +287,9 @@ class markov():
         # -a pour choisir l'auteur
         # -F pour setter le n-gramme
         sortedNgram = sorted(self.dicts[auteur].items(), key=lambda item: item[1], reverse=True)
+        print(sorted(self.dicts[auteur].values(),reverse = True))
         returnList = []
+
         returnList.append(sortedNgram[n][0].gram)
         return returnList
 
