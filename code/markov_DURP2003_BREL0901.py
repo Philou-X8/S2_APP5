@@ -26,10 +26,12 @@ import os
 import glob
 import ntpath
 import math
+import random
+
+
 class ngram():
     def __init__(self):
         self.gram = []
-        self.nextWord = {}
 
 
     def append(self, word):
@@ -269,6 +271,36 @@ class markov():
         Returns:
             void : ne retourne rien, le texte produit doit Ãªtre Ã©crit dans le fichier "textname"
         """
+        TextWordList = [] #liste of word that will make up the text
+        writerBuffer = self.get_nth_element(auteur, 0)[0]
+
+        TextWordList.extend(writerBuffer)
+        for i in range(len(writerBuffer) , taille):
+            currentNgram = ngram()
+            for word in writerBuffer:
+                currentNgram.append(word)
+            keyList = [key for key in self.dicts[auteur][currentNgram]]
+            keyList = keyList[1::]
+            valueList = [value for value in self.dicts[auteur][currentNgram].values()]
+            valueList = valueList[1::]
+            newWord = (random.choices(keyList, weights=valueList, k=1))
+            TextWordList.extend(newWord)
+            writerBuffer.extend(newWord)
+            writerBuffer.pop(0)
+
+
+        with open(textname, 'w', encoding='UTF-8') as outputFile:
+            endOfLine = 0
+            for word in TextWordList:
+
+                outputFile.write(word)
+                outputFile.write(" ")
+                endOfLine += 1
+                if endOfLine % 10 == 0:
+                    outputFile.write("\n")
+
+
+        #sortedNextW = sorted(nextWdict.items(), key=lambda item: item[1], reverse=True)
 
         return
 
@@ -285,7 +317,7 @@ class markov():
         # -a pour choisir l'auteur
         # -F pour setter le n-gramme
 
-        sortedNgram = sorted(self.dicts[auteur].items(), key=lambda item: item[1], reverse=True)
+        sortedNgram = sorted(self.dicts[auteur].items(), key=lambda item: item[1][0], reverse=True)
         if n > len(sortedNgram):
             return [[]]
         returnList = []
@@ -377,24 +409,38 @@ class markov():
                 ng = ngram()
                 ng.append(word)
 
-                for i in range(wordList.index(word)+1, wordList.index(word)+self.ngram):
+                for i in range(counter, counter + self.ngram):
                     if(i<len(wordList)):
                         ng.append(wordList[i])
 
-
                 if ng in self.dicts[autorKey]:
-                    self.dicts[autorKey][ng] += 1
+                    self.dicts[autorKey][ng][0] += 1
                 else :
-                    self.dicts[autorKey][ng] = 1
+                    self.dicts[autorKey][ng] = {}
+                    self.dicts[autorKey][ng].update({0: 1})
+
+                if (counter + self.ngram) < len(wordList):
+                    wordFollowup = wordList[counter + self.ngram]
+                    if wordFollowup in self.dicts[autorKey][ng]:
+                        self.dicts[autorKey][ng][wordFollowup] += 1
+                    else:
+                        self.dicts[autorKey][ng][wordFollowup] = 1
+                    """
+                    if self.dicts[autorKey][ng].get(nextW) == None:
+                        self.dicts[autorKey][ng].update({nextW: 1})
+                    else:
+                        self.dicts[autorKey][ng][nextW] = 3
+                    
+                    
+                    if nextW in self.dicts[autorKey][ng]:
+                        self.dicts[autorKey][ng][nextW] += 1
+                    else:
+                        self.dicts[autorKey][ng][nextW] = 1
+                    """
                 #print(list(self.dicts[autorKey].keys()))
                 #print(list(self.dicts[autorKey].keys())[-1].nextWord)
 
-                if ((wordList.index(word) + self.ngram) < len(wordList)):
-                    nextW = wordList[wordList.index(word) + self.ngram]
-                    if nextW in list(self.dicts[autorKey].keys())[-1].nextWord:
-                        list(self.dicts[autorKey].keys())[-1].nextWord[nextW] += 1
-                    else:
-                        list(self.dicts[autorKey].keys())[-1].nextWord[nextW] = 1
+
 
                 #print("test")
 
