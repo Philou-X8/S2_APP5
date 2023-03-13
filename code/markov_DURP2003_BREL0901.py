@@ -281,12 +281,12 @@ class markov():
         #print(len(splitedTexts))
 
         #for dict in self.dicts:
-        for key in self.dicts.keys(): # for a single dict in the nested dict
+        for autorKey in self.dicts.keys(): # for a single dict in the nested dict
             # do something with the word list of the current autor
             # example: split into [Bigramme], [Trigramme], [n-gramme]
-            print(key)
+            print(autorKey)
 
-            wordList = splitedTexts[key]
+            wordList = splitedTexts[autorKey]
 
             counter = 0
 
@@ -303,10 +303,10 @@ class markov():
                     if(i<len(wordList)):
                         ng.append(wordList[i])
 
-                        if ng in self.dicts[key]:
-                            self.dicts[key][ng]+=1
+                        if ng in self.dicts[autorKey]:
+                            self.dicts[autorKey][ng]+=1
                         else :
-                            self.dicts[key][ng] =1
+                            self.dicts[autorKey][ng] =1
 
 
 
