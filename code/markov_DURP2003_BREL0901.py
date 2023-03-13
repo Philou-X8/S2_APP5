@@ -27,8 +27,6 @@ import glob
 import ntpath
 import math
 import random
-
-
 class ngram():
     def __init__(self):
         self.gram = []
@@ -207,10 +205,11 @@ class markov():
         """
 
         #ouverture et lecture du fichier
-        file =open(oeuvre, "r")
-        currentText = file.read() #file in a string
-
+        with open(oeuvre, 'r', encoding='UTF-8') as currentFile:  # open the file
+            currentText = currentFile.read()  # file to string
+            currentFile.close()
         ##text formating
+
         for p in self.PONC:  # remove ponctuation
             currentText = currentText.replace(p, "")
         for p_space in self.PONC_toSpace:  # change some ponctuation to a [space]
@@ -219,24 +218,34 @@ class markov():
         currentTextSplitted = []  # text as a list
         currentTextSplitted.extend(currentText.split(" "))
         currentTextFiltered =[]
+
         for word in currentTextSplitted:
 
             if len(word) > 2:
                 currentTextFiltered.append(word)
 
         dictOeuvre = {}
+
+
         for word in currentTextFiltered:
+
+
             ng = ngram()
             ng.append(word)
 
-            for i in range(currentTextFiltered.index(word) + 1, currentTextSplitted.index(word) + self.ngram):
+            for i in range(currentTextFiltered.index(word) + 1, currentTextFiltered.index(word) + self.ngram):
+
                 if (i < len(currentTextFiltered)):
                     ng.append(currentTextFiltered[i])
 
             if ng in dictOeuvre:
                 dictOeuvre[ng] += 1
+
             else:
                 dictOeuvre[ng] = 1
+
+
+
 
 
 
@@ -371,7 +380,7 @@ class markov():
                 #print("auteur: " + currentAutor + " / current file: " + currentFilePath)
                 with open(currentFilePath, 'r', encoding='UTF-8') as currentFile: # open the file
                     currentText = currentFile.read() # file to string
-
+                    currentFile.close()
                     for p in self.PONC: # remove ponctuation
                         currentText = currentText.replace(p, "")
                     for p_space in self.PONC_toSpace: # change some ponctuation to a [space]
@@ -394,7 +403,7 @@ class markov():
         for autorKey in self.dicts.keys(): # for a single dict in the nested dict
             # do something with the word list of the current autor
             # example: split into [Bigramme], [Trigramme], [n-gramme]
-            print(autorKey)
+
 
             wordList = splitedTexts[autorKey]
 
@@ -443,7 +452,6 @@ class markov():
 
 
                 #print("test")
-
 
 
 
