@@ -281,21 +281,22 @@ class markov():
             # do something with the word list of the current autor
             # example: split into [Bigramme], [Trigramme], [n-gramme]
             print(key)
-            somme =0
+
             wordList = splitedTexts[key]
-            print(len(wordList))
+
             for word in wordList: # for each word in a single author
-                somme+=1
-                if(somme%10000==0):
-                    print(somme)
+
                 ng = ngram()
                 ng.append(word)
+
                 for i in range(wordList.index(word)+1, wordList.index(word)+self.ngram):
-                    ng.append(wordList[i])
-                if ng in self.dicts[key]:
-                    self.dicts[key][ng]+=1
-                else :
-                    self.dicts[key][ng] =1
+                    if(i<len(wordList)):
+                        ng.append(wordList[i])
+
+                        if ng in self.dicts[key]:
+                            self.dicts[key][ng]+=1
+                        else :
+                            self.dicts[key][ng] =1
 
 
 
