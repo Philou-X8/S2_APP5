@@ -327,18 +327,19 @@ class markov():
         # -F pour setter le n-gramme
 
         sortedNgram = sorted(self.dicts[auteur].items(), key=lambda item: item[1][0], reverse=True)
+
         if n > len(sortedNgram):
             return [[]]
         returnList = []
         returnList.append(sortedNgram[n][0].gram)
 
-        frequency = sortedNgram[n][1]
+        frequency = sortedNgram[n][1][0]
         offset = 1
-        while sortedNgram[n-offset][1] == frequency:
+        while sortedNgram[n-offset][1][0] == frequency:
             returnList.append(sortedNgram[n-offset][0].gram)
             offset += 1
         offset = 1
-        while sortedNgram[n+offset][1] == frequency:
+        while sortedNgram[n+offset][1][0] == frequency:
             returnList.append(sortedNgram[n+offset][0].gram)
             offset += 1
 
@@ -418,7 +419,7 @@ class markov():
                 ng = ngram()
                 ng.append(word)
 
-                for i in range(counter, counter + self.ngram):
+                for i in range(counter, counter + self.ngram -1):
                     if(i<len(wordList)):
                         ng.append(wordList[i])
 
