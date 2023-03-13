@@ -87,7 +87,7 @@ class markov():
 
     # Le code qui suit est fourni pour vous faciliter la vie.  Il n'a pas Ã  Ãªtre modifiÃ©
     # Signes de ponctuation Ã  retirer (complÃ©ter la liste qui ne comprend que "!" et "," au dÃ©part)
-    PONC = ["!","?",",",".","--",";",":","_","...","«","»","(",")","[","]","—"] # char that should be removed
+    PONC = ["!","?",",",".","--",";",":","_","...","«","»","(",")","[","]","-"] # char that should be removed
     PONC_toSpace = ["'","\n"," "] # char that should be changed to a space
 
     def set_ponc(self, value):
@@ -206,10 +206,11 @@ class markov():
         """
 
         #ouverture et lecture du fichier
-        file =open(oeuvre, "r")
-        currentText = file.read() #file in a string
-        file.close()
+        with open(oeuvre, 'r', encoding='UTF-8') as currentFile:  # open the file
+            currentText = currentFile.read()  # file to string
+            currentFile.close()
         ##text formating
+
         for p in self.PONC:  # remove ponctuation
             currentText = currentText.replace(p, "")
         for p_space in self.PONC_toSpace:  # change some ponctuation to a [space]
@@ -218,24 +219,34 @@ class markov():
         currentTextSplitted = []  # text as a list
         currentTextSplitted.extend(currentText.split(" "))
         currentTextFiltered =[]
+
         for word in currentTextSplitted:
 
             if len(word) > 2:
                 currentTextFiltered.append(word)
 
         dictOeuvre = {}
+
+
         for word in currentTextFiltered:
+
+
             ng = ngram()
             ng.append(word)
 
-            for i in range(currentTextFiltered.index(word) + 1, currentTextSplitted.index(word) + self.ngram):
+            for i in range(currentTextFiltered.index(word) + 1, currentTextFiltered.index(word) + self.ngram):
+
                 if (i < len(currentTextFiltered)):
                     ng.append(currentTextFiltered[i])
 
             if ng in dictOeuvre:
                 dictOeuvre[ng] += 1
+
             else:
                 dictOeuvre[ng] = 1
+
+
+
 
 
 
@@ -346,7 +357,7 @@ class markov():
                 #print("auteur: " + currentAutor + " / current file: " + currentFilePath)
                 with open(currentFilePath, 'r', encoding='UTF-8') as currentFile: # open the file
                     currentText = currentFile.read() # file to string
-
+                    currentFile.close()
                     for p in self.PONC: # remove ponctuation
                         currentText = currentText.replace(p, "")
                     for p_space in self.PONC_toSpace: # change some ponctuation to a [space]
@@ -402,7 +413,6 @@ class markov():
                         list(self.dicts[autorKey].keys())[-1].nextWord[nextW] = 1
 
                 #print("test")
-
 
 
 
