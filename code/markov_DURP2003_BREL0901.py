@@ -29,16 +29,17 @@ class ngram():
     def __init__(self):
         self.gram = []
 
-    def append(self, word):
+    def append(self, word:str):
         self.gram.append(word)
 
     def string(self):
-        str = ""
-        for word in self.gram:
-            str += word + " "
-        return  str
+        #str = ""
+        #for word in self.gram:
+            #str = str + word + " "
+        newString = ' '.join(self.gram)
+        return  newString
     def __hash__(self):
-
+        #print(self.gram)
         return hash(self.string())
     def __eq__(self, other):
         if len(self.gram) != len(other.gram):
@@ -64,8 +65,8 @@ class markov():
 
     # Le code qui suit est fourni pour vous faciliter la vie.  Il n'a pas Ã  Ãªtre modifiÃ©
     # Signes de ponctuation Ã  retirer (complÃ©ter la liste qui ne comprend que "!" et "," au dÃ©part)
-    PONC = ["!","?",",",".","--",";",":","_","...","«","»","(",")","[","]"] # char that should be removed
-    PONC_toSpace = ["'","\n\n","\n"," "] # char that should be changed to a space
+    PONC = ["!","?",",",".","--",";",":","_","...","«","»","(",")","[","]","—"] # char that should be removed
+    PONC_toSpace = ["'","\n"," "] # char that should be changed to a space
 
     def set_ponc(self, value):
         """DÃ©termine si les signes de ponctuation sont conservÃ©s (True) ou Ã©liminÃ©s (False)
@@ -180,6 +181,21 @@ class markov():
         Returns:
             resultats (Liste[(string,float)]) : Liste de tuples (auteurs, niveau de proximitÃ©), oÃ¹ la proximitÃ© est un nombre entre 0 et 1)
         """
+        with open(oeuvre, 'r', encoding='UTF-8') as currentFile:  # open the file
+            currentText = currentFile.read()  # file to string
+
+            for p in self.PONC:  # remove ponctuation
+                currentText = currentText.replace(p, "")
+            for p_space in self.PONC_toSpace:  # change some ponctuation to a [space]
+                currentText = currentText.replace(p_space, " ")
+            print("file splitted")
+            # add current text to the word list of the corresponding autor
+            currentTextSplitted = []  # text as a list
+            currentTextSplitted.append(currentText.split(" "))
+            currentTextFiltered = []  # text as a list with words above 2 letters
+            for word in currentTextSplitted:
+                if len(word) > 2:
+                    currentTextFiltered.append(word)
 
         resultats = [("balzac", 0.1234), ("voltaire", 0.1123)]   # Exemple du format des sorties
 
@@ -265,10 +281,9 @@ class markov():
                     currentTextFiltered = []  # text as a list with words above 2 letters
                     for word in currentTextSplitted:
                         if len(word) > 2:
-                            currentTextFiltered.append(word)
+                            currentTextFiltered.extend(word)
                     splitedTexts[self.auteurs.index(currentAutor)].extend(currentTextFiltered)
                     # add current text to the word list of the corresponding autor
-                    splitedTexts[self.auteurs.index(currentAutor)].extend(currentText.split(" "))
                     #print(len(splitedTexts[self.auteurs.index(currentAutor)]))
         #print(len(splitedTexts))
 
@@ -279,12 +294,15 @@ class markov():
             # example: split into [Bigramme], [Trigramme], [n-gramme]
 
 
-
+            count = 0
 
             ngram_dict: dict = {}
 
             for word in wordList:
 
+                count+=1
+                if count%10000 == 0:
+                    print(count)
                 ng = ngram()
                 ng.append(word)
 
@@ -298,6 +316,8 @@ class markov():
 
                 else :
                     ngram_dict[ng] =1
+            count = 0
+            print("autor done")
 
 
 
