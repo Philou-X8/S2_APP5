@@ -92,7 +92,7 @@ class markov():
     # Le code qui suit est fourni pour vous faciliter la vie.  Il n'a pas Ã  Ãªtre modifiÃ©
     # Signes de ponctuation Ã  retirer (complÃ©ter la liste qui ne comprend que "!" et "," au dÃ©part)
     PONC = ["!","?",",",".","--",";",":","_","...","«","»","(",")","[","]","—"] # char that should be removed
-    PONC_toSpace = ["'","\n"," "] # char that should be changed to a space
+    PONC_toSpace = ["-","'","\n"," "] # char that should be changed to a space
 
     def set_ponc(self, value):
         """DÃ©termine si les signes de ponctuation sont conservÃ©s (True) ou Ã©liminÃ©s (False)
@@ -249,11 +249,6 @@ class markov():
             else:
                 dictOeuvre[ng] = 1
 
-
-
-
-
-
         resultats = []
 
         for key in self.dicts:
@@ -294,10 +289,12 @@ class markov():
             currentNgram = ngram()
             for word in writerBuffer:
                 currentNgram.append(word)
+            """
             print("------new line_______")
             print(currentNgram.gram)
             print(self.dicts[auteur].get(currentNgram))
-            #print(list(self.dicts[auteur].get(currentNgram)))
+            print(list(self.dicts[auteur].get(currentNgram)))
+            """
             #keyList = list(self.dicts[auteur].get(currentNgram))
             keyList = [key for key in self.dicts[auteur][currentNgram]]
             keyList = keyList[1::]
@@ -320,9 +317,6 @@ class markov():
                 if endOfLine % 10 == 0:
                     outputFile.write("\n")
 
-
-        #sortedNextW = sorted(nextWdict.items(), key=lambda item: item[1], reverse=True)
-
         return
 
     def get_nth_element(self, auteur, n):
@@ -339,19 +333,19 @@ class markov():
         # -F pour setter le n-gramme
 
         sortedNgram = sorted(self.dicts[auteur].items(), key=lambda item: item[1][0], reverse=True)
-
+        nn = n - 1
         if n > len(sortedNgram):
             return [[]]
         returnList = []
-        returnList.append(sortedNgram[n][0].gram)
+        returnList.append(sortedNgram[nn][0].gram)
 
-        frequency = sortedNgram[n][1][0]
+        frequency = sortedNgram[nn][1][0]
         offset = 1
-        while sortedNgram[n-offset][1][0] == frequency:
+        while sortedNgram[nn-offset][1][0] == frequency:
             returnList.append(sortedNgram[n-offset][0].gram)
             offset += 1
         offset = 1
-        while sortedNgram[n+offset][1][0] == frequency:
+        while sortedNgram[nn+offset][1][0] == frequency:
             returnList.append(sortedNgram[n+offset][0].gram)
             offset += 1
 
@@ -392,13 +386,13 @@ class markov():
             for currentFilePath in self.get_aut_files(key): # for a text of that autor
                 #print("auteur: " + currentAutor + " / current file: " + currentFilePath)
                 with open(currentFilePath, 'r', encoding='UTF-8') as currentFile: # open the file
-                    currentText = currentFile.read() # file to string
+                    currentText = currentFile.read().lower() # file to string
                     currentFile.close()
                     for p in self.PONC: # remove ponctuation
                         currentText = currentText.replace(p, "")
                     for p_space in self.PONC_toSpace: # change some ponctuation to a [space]
                         currentText = currentText.replace(p_space, " ")
-                    #print("file splitted")
+
                     # add current text to the word list of the corresponding autor
                     currentTextSplitted = []  # text as a list
                     currentTextSplitted.extend(currentText.split(" "))
@@ -407,10 +401,7 @@ class markov():
                     for word in currentTextSplitted:
                         if len(word) > 2:
                             splitedTexts[key].append(word)
-                    #splitedTexts[self.auteurs.index(currentAutor)].extend(currentTextFiltered)
-                    # add current text to the word list of the corresponding autor
-                    #print(len(splitedTexts[self.auteurs.index(currentAutor)]))
-        #print(len(splitedTexts))
+
 
         #for dict in self.dicts:
         for autorKey in self.dicts.keys(): # for a single dict in the nested dict
@@ -425,8 +416,6 @@ class markov():
             for word in wordList: # for each word in a single author
 
                 counter += 1
-                if counter % 10000 == 0:
-                    print(counter)
 
                 ng = ngram()
                 ng.append(word)
@@ -459,16 +448,6 @@ class markov():
                     else:
                         self.dicts[autorKey][ng][nextW] = 1
                     """
-                #print(list(self.dicts[autorKey].keys()))
-                #print(list(self.dicts[autorKey].keys())[-1].nextWord)
-
-
-
-                #print("test")
-
-
-
-
 
 
         return
